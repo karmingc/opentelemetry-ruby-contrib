@@ -26,7 +26,7 @@ module OpenTelemetry
 
             request = payload[:request]
 
-            rack_span.name = "#{payload[:controller]}##{payload[:action]}" unless request.env['action_dispatch.exception']
+            rack_span.name = span_name(payload) unless request.env['action_dispatch.exception']
 
             attributes_to_append = {
               OpenTelemetry::SemanticConventions::Trace::CODE_NAMESPACE => String(payload[:controller]),
@@ -51,6 +51,16 @@ module OpenTelemetry
             rack_span.record_exception(payload[:exception_object]) if payload[:exception_object]
           rescue StandardError => e
             OpenTelemetry.handle_error(exception: e)
+          end
+
+          private
+
+          def span_name(payload)
+            request = payload[:request]
+
+            return "#{request.method} /#{payload[:controller].underscore}/#{payload[:action]}" if ::Rails.version < '7.1'
+
+            "#{request.method} #{request.route_uri_pattern}".gsub('(.:format)', '')
           end
         end
       end

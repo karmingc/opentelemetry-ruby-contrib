@@ -36,7 +36,7 @@ describe OpenTelemetry::Instrumentation::ActionPack::Handlers::ActionController 
 
     _(last_response.body).must_equal 'actually ok'
     _(last_response.ok?).must_equal true
-    _(span.name).must_equal 'ExampleController#ok'
+    _(span.name).must_equal 'GET /ok'
     _(span.kind).must_equal :server
     _(span.status.ok?).must_equal true
 
@@ -65,7 +65,7 @@ describe OpenTelemetry::Instrumentation::ActionPack::Handlers::ActionController 
 
     _(last_response.body).must_equal 'created new item'
     _(last_response.ok?).must_equal true
-    _(span.name).must_equal 'ExampleController#new_item'
+    _(span.name).must_equal 'GET /items/new'
     _(span.kind).must_equal :server
     _(span.status.ok?).must_equal true
 
@@ -85,7 +85,7 @@ describe OpenTelemetry::Instrumentation::ActionPack::Handlers::ActionController 
   it 'sets the span name when the controller raises an exception' do
     get 'internal_server_error'
 
-    _(span.name).must_equal 'ExampleController#internal_server_error'
+    _(span.name).must_equal 'GET /internal_server_error'
     _(span.kind).must_equal :server
     _(span.status.ok?).must_equal false
 
@@ -145,7 +145,7 @@ describe OpenTelemetry::Instrumentation::ActionPack::Handlers::ActionController 
     it 'does not overwrite the span name from the controller that raised' do
       get 'internal_server_error'
 
-      _(span.name).must_equal 'ExampleController#internal_server_error'
+      _(span.name).must_equal 'GET /internal_server_error'
       _(span.kind).must_equal :server
       _(span.status.ok?).must_equal false
 
